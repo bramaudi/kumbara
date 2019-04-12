@@ -97,7 +97,7 @@ class Category extends Controllers {
 			}
 			else {
 				$json['error'] = 1;
-				$json['message'] = 'Failed to create new category.';
+				$json['message'] = 'Failed to update category.';
 			}
 		}
 
