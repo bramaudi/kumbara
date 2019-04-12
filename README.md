@@ -1,15 +1,28 @@
-Simple PHP MVC prototype.
+# nulis
+Is a headless blog, provide REST API cms.
 
-### List of features
+## API Endpoint
 
-* URL format: `host/{controller}/{method}/{@array params}`
-* Simple template engine using [tinyTemplate](https://github.com/miya0001/tinyTemplate)
-* PDO Database wrapper
+### Catgeory
 
-## Install
+* **Create**
+* POST: `/api.category/create`
+* Data: `name`, (`slug`)
 
-Download or clone this repository.
+---
 
-## Configuration
+* **Read**
+* GET: `/api.category`
+* GET: `/api.category/{id|slug}`
 
-Change your setting in `app/config.php`
+---
+
+* **Update**
+* POST: `/api.category/update`
+* Data: `id`, `name`, (`slug`)
+
+---
+
+* **Delete**
+* POST: `/api.category/delete`
+* Data: `slug`
