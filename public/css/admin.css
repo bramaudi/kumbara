@@ -1,0 +1,301 @@
+* {box-sizing: border-box}
+
+a {
+	text-decoration: none;
+	color: teal
+}
+
+div[id*='content_'] {
+	display: none;
+}
+
+div[id*='content_']:target {
+	display: block;
+}
+
+body {
+	padding: 0;
+	margin: auto;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header {
+	background: teal;
+	color: white;
+
+	padding: 20px;
+	position: fixed;
+	width: 100%;
+	top: 0;
+}
+
+header #brand,
+header #menu {
+	display: inline-block;
+}
+
+header #menu {
+	padding: 0;
+	margin: 0;
+	outline: 0;
+	float: right;
+	cursor: pointer;
+}
+
+#menu.active {
+	background: #fff;
+	color: teal;
+	padding: 5px;
+	margin: -5px;
+}
+
+#header-divider {
+	margin-top: 70px;
+}
+
+#sidebar {
+	display: none;
+}
+
+#sidebar.active {
+	display: block;
+	position: fixed;
+	top: 50px;
+	right: 10px;
+	width: 40%;
+	background: #fff;
+	border: 1px solid #333
+}
+
+.nav-link {
+	display: block;
+	padding: 10px;
+	background: #f0f0f0;
+}
+.nav-link:nth-child(odd) {
+	background: #ddd;
+}
+.nav-link:hover {
+	background: gray;
+	color: #fff
+}
+
+.post {
+	margin: 10px;
+	padding: 0;
+	border: 1px solid #ccc;
+	border-radius: 10px
+}
+
+.post h2 {
+	padding: 15px;
+	margin: 0;
+	font-size: large
+}
+
+.post .meta {
+	color: gray;
+	padding: 15px;
+	padding-top: 0;
+}
+
+.post .content {
+	padding: 15px;
+	padding-top: 0;
+}
+
+footer {
+	background: darkslategrey;
+	color: white;
+
+	padding: 20px;
+}
+
+
+/** Form */
+form {
+	padding: 10px 0;
+	margin: 10px;
+	border: 1px solid #ccc;
+	border-radius: 10px
+}
+form input,
+form textarea {
+	width: calc(100% - 20px);
+	padding: 10px;
+	margin: 10px;
+	border: 1px solid #aaa
+}
+form input[type=checkbox] {
+	width: auto;
+}
+form h4 {
+	margin: auto 10px;
+}
+
+button {
+	cursor: pointer;
+	background: teal;
+	color: white;
+	padding: 10px;
+	margin: auto 10px;
+	border: 1px solid teal;
+	border-radius: 3px;
+	font-size: medium;
+}
+
+button.info {
+	background: #ddf;
+	border-color: #ddf;
+	color: #55f
+}
+button.danger {
+	background: #fdd;
+	border-color: #fdd;
+	color: #f55
+}
+
+button:disabled {
+	background: white;
+	color: teal;
+	cursor: not-allowed
+}
+
+.notif {
+	background: whitesmoke;
+	padding: 10px;
+	margin: 0 10px;
+	margin-top: 10px;
+}
+
+
+/** Table */
+table {
+	width: calc(100% - 20px);
+	border-collapse: collapse;
+	margin: 10px;
+}
+td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+tr:hover {background-color: #ddd;}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background: teal;
+  color: white;
+}
+
+
+
+/** Spinner */
+.spinner {
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid teal;
+  border-bottom: 10px solid teal;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+.spinner.center {
+	margin: 10px auto;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+/** Modal */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	padding-top: 10%;
+	padding-bottom: 10%;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal form {
+	border: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+@media only screen and (min-width: 700px) {
+
+	#content {
+		width: 70%;
+		float: right;
+	}
+	
+	#sidebar {
+		width: 30%;
+		float: left;
+		display: block !important;
+		padding: 10px;
+		padding-right: 0;
+	}
+
+	header #menu {
+		display: none;
+	}
+
+	#header-divider {
+		margin-top: 60px;
+	}
+
+}

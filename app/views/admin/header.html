@@ -4,17 +4,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="/public/css/admin.css">
 	<script src="/public/js/mithril.min.js"></script>
-	<title>Document</title>
+	<title>{$title}</title>
 </head>
 <body>
 	
-	<script>
-	fetch('/admin/post')
-	.then(res => res.text())	
-	.then(res => {
-		m(m.trust(res))
-	})
-	</script>
-</body>
-</html>
+	<header>
+		<div id="brand">bramaudi</div>
+		<button id="menu" onclick="menuNav()">Menu</button>
+	</header>
+	<div id="header-divider"></div>
+	<div id="content">

@@ -1,0 +1,107 @@
+* {box-sizing: border-box}
+
+a {
+	text-decoration: none;
+	color: teal
+}
+
+body {
+	padding: 0;
+	margin: auto;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+header {
+	background: teal;
+	color: white;
+
+	padding: 20px;
+}
+
+.post {
+	margin: 10px;
+	padding: 0;
+	border: 1px solid #ccc;
+	border-radius: 10px
+}
+
+.post h2 {
+	padding: 15px;
+	margin: 0;
+	font-size: large
+}
+
+.post .meta {
+	color: gray;
+	padding: 15px;
+	padding-top: 0;
+}
+
+.post .content {
+	padding: 15px;
+	padding-top: 0;
+}
+
+footer {
+	background: darkslategrey;
+	color: white;
+
+	padding: 20px;
+}
+
+
+/** Form */
+form {
+	padding: 10px 0;
+	margin: 10px;
+	border: 1px solid #ccc;
+	border-radius: 10px
+}
+form input,
+form textarea {
+	width: calc(100% - 20px);
+	padding: 10px;
+	margin: 10px;
+}
+form h4 {
+	margin: auto 10px;
+}
+
+button {
+	cursor: pointer;
+	background: teal;
+	color: white;
+	padding: 10px;
+	margin: auto 10px;
+	border: 1px solid teal;
+	border-radius: 3px;
+	font-size: medium;
+}
+
+button:disabled {
+	background: white;
+	color: teal;
+	cursor: not-allowed
+}
+
+.notif {
+	background: whitesmoke;
+	padding: 10px;
+	margin: 0 10px;
+	margin-top: 10px;
+}
+
+
+@media only screen and (min-width: 700px) {
+
+	#content {
+		width: 70%;
+		float: left;
+	}
+	
+	#sidebar {
+		width: 30%;
+		float: left;
+	}
+
+}

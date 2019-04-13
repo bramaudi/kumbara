@@ -1,0 +1,46 @@
+<form id="mainForm">
+	<h4>Username:</h4>
+	<input type="text" id="js_username">
+	<h4>Password:</h4>
+	<input type="password" id="js_password">
+	<br>
+	<button type="submit" id="btn">Login</button>
+	<div id="formNotice"></div>
+</form>
+
+<script>
+	mainForm.onsubmit = (event) =>
+	{
+		event.preventDefault()
+
+		btn.setAttribute('disabled', true)
+		m.render(formNotice, [
+			m('div', {class: 'notif'}, 'Loading ...')
+		])
+
+		m.request({
+			method: 'POST',
+			url: '/api.user/login',
+			data: {
+				username: js_username.value,
+				password: js_password.value,
+			}
+		})
+		.then(res => {
+			
+			btn.removeAttribute('disabled')
+			m.render(formNotice, [
+				m('div', {class: 'notif'}, res.message),
+				m('span', {id:'loadingSuccess'})
+			])
+
+			if (!res.error) {
+				m.render(loadingSuccess, m('div', {class:'spinner center'}))
+				setTimeout(() => {
+					window.location.href = '/admin'
+				}, 2000)
+			}
+			
+		})
+	}
+</script>

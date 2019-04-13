@@ -1,0 +1,265 @@
+<button onclick="modalFunc('modalCreate')">+ Create</button>
+
+<table id="app"></table>
+
+<div id="modalEdit" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<input type="hidden" class="params">
+		<form id="editForm"></form>
+	</div>
+</div>
+
+<div id="modalDelete" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<input type="hidden" class="params">
+		<form id="deleteForm"></form>
+	</div>
+</div>
+
+<div id="modalCreate" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<form id="formCreate">
+			<h4>Title</h4>
+			<input type="text" id="create_title">
+			<h4>Content</h4>
+			<textarea id="create_content" rows="10"></textarea>
+			<h4>Slug</h4>
+			<input type="text" id="create_slug">
+			<h4>Category</h4>
+			<input type="text" id="create_category">
+			<h4>Status</h4>
+			<input type="checkbox" id="create_status"> Publish post?<br/>
+			<button>Create</button>
+			<div id="createResult"></div>
+		</form>
+	</div>
+</div>
+
+<script>
+let postsElement = {
+	view: (x) => {
+		return [
+			m('tr', [
+				m('td', x.attrs.title),
+				m('td', x.attrs.time),
+				m('td', x.attrs.status),
+				m('td', [
+					m('button', {
+						class: 'info',
+						onclick: () => {
+							formEdit(x.attrs.id)
+							modalFunc('modalEdit', x.attrs.id)
+						}
+					}, 'Edit'),
+					m('button', {
+						class: 'danger',
+						onclick: () => {
+							formDelete(x.attrs.id)
+							modalFunc('modalDelete', x.attrs.id)
+						}
+					}, 'Delete'),
+				])
+			])
+		]
+	}
+}
+
+let loadPost = () => {
+	m.render(app, m('div', {class: 'spinner center'}))
+
+	let posts = []
+	m.request({
+		method: 'GET',
+		url: '/api.posts'
+	})
+	.then(res => {
+		
+		if (res !== null) {
+			res.map((x) => {
+				posts.push(m(postsElement, {
+					id: x.id,
+					title: x.title,
+					time: x.time,
+					status: x.status == 1 ? 'Published' : 'Draft'
+				}))
+			})
+		}
+		
+		m.render(app, [
+			m('tr', [
+				m('th', 'Title'),
+				m('th', 'Time'),
+				m('th', 'Status'),
+				m('th', 'Action'),
+			]),
+			posts
+		])
+	})
+}
+
+loadPost()
+
+
+
+
+
+let postForm = {
+	view: (x) => {
+		return [
+			m('h4', 'Title'),
+			m('input', {id: 'jsForm_title', value: x.attrs.title}),
+			m('h4', 'Content'),
+			m('textarea', {id: 'jsForm_content', rows: 10}, x.attrs.content),
+			m('h4', 'Slug'),
+			m('input', {id: 'jsForm_slug', value: x.attrs.slug}),
+			m('h4', 'Category'),
+			m('input', {id: 'jsForm_category', value: x.attrs.category}),
+			m('h4', 'Status'),
+			m('input', {type: 'checkbox', id: 'jsForm_status', checked: x.attrs.checked, value: x.attrs.status}),
+			m.trust('Publish post?<br/>'),
+			m('input', {type: 'hidden', id:'jsForm_id', value: x.attrs.id}),
+			m('button', 'Save'),
+			m('div', {id:'editResult'})
+		]
+	}
+}
+
+let formEdit = (id) => {
+
+	m.render(editForm, m('div', {class:'spinner center'}))
+
+	m.request({
+		method: 'GET',
+		url: '/api.posts/'+id
+	})
+	.then(res => {
+
+		let checked = res.status == 0 ? false : true
+		
+		m.render(editForm, m(postForm, {
+			id: res.id,
+			title: res.title,
+			content: res.text,
+			slug: res.slug,
+			category: res.category,
+			status: res.status,
+			checked: checked,
+		}))
+
+	})
+}
+
+editForm.onsubmit = (event) => {
+	event.preventDefault()
+	m.render(editResult, m('div', {class:'spinner center'}))
+
+	m.request({
+		method: 'POST',
+		url: '/api.posts/update',
+		data: {
+			id: jsForm_id.value,
+			title: jsForm_title.value,
+			content: jsForm_content.value,
+			slug: jsForm_slug.value,
+			category: jsForm_category.value,
+			status: jsForm_status.checked ? 1: 0
+		}
+	})
+	.then(res => {
+
+		m.render(editResult, 
+			m('div', {class:'notif'}, res.message)
+		)
+
+		if (!res.error) {
+			setTimeout(() => {
+				loadPost()
+			}, 1000)
+		}
+		
+	})
+}
+
+
+let deleteFormComponent = {
+	view: (x) => {
+		return [
+			m('p', 'Are your sure to delete this post?'),
+			m.trust('<strong>'+x.attrs.title+'</strong><br/><br/>'),
+			m('button', {class:'danger', onclick: (event) => {
+				event.preventDefault()
+				m.render(deleteFormNotice, m('div', {class:'spinner center'}))
+
+				m.request({
+					method: 'POST',
+					url: '/api.posts/delete',
+					data: {slug: x.attrs.slug}
+				})
+				.then(res => {
+					
+					m.render(deleteFormNotice,
+						m('div', {class: 'notif'}, res.message)
+					)
+
+					if (!res.error) {
+						setTimeout(() => {
+							loadPost()
+						}, 1000)
+					}
+					
+				})
+			}}, 'Delete'),
+			m('div', {id: 'deleteFormNotice'})
+		]
+	}
+}
+
+let formDelete = (id) => {
+
+	m.render(deleteForm, m('div', {class:'spinner center'}))	
+
+	m.request({
+		method: 'GET',
+		url: '/api.posts/'+id
+	})
+	.then(res => {
+
+		m.render(deleteForm, m(deleteFormComponent, {
+			slug: res.slug,
+			title: res.title
+		}))
+
+	})
+}
+
+
+formCreate.onsubmit = (event) => {
+
+	m.render(createResult, m('div', {class:'spinner center'}))
+	event.preventDefault()
+
+	m.request({
+		method: 'POST',
+		url: '/api.posts/create',
+		data: {
+			title: create_title.value,
+			content: create_content.value,
+			slug: create_slug.value,
+			category: create_category.value,
+			status: create_status.checked ? 1: 0,
+		}
+	})
+	.then(res => {
+		m.render(createResult, m('div', {class:'notif'}, res.message))
+		if (!res.error) {
+			setTimeout(() => {
+				loadPost()
+			}, 1000)
+		}
+	})
+
+}
+</script>

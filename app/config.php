@@ -8,7 +8,7 @@ error_reporting(E_ALL);
  * Debug mode enabled will show error in specific details
  * otherwise error just showing a simple html page
  */
-define('DEBUG_MODE', 1);
+define('DEBUG_MODE', 0);
 
 /**
  * Database configuration

@@ -2,12 +2,11 @@
 
 class Home extends Controllers {
 
-	public function main($user = 'Brama Udi')
+	public function main($slug = '')
 	{
-		$data['param'] = $user;
-		$data['plugin'] = $this->plugin->slugify($user);
-		$data['user'] = $this->model('Users')->users;
-		$this->view('home/index', $data);
+		// $this->view('admin/header');
+		$this->view('home/index');
+		// $this->view('admin/footer');
 	}
 	
 }

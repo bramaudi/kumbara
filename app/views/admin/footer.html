@@ -1,0 +1,39 @@
+</div>
+<div id="sidebar">
+	{if:$logged}
+	<a href="/admin" class="nav-link">Posts</a>
+	<a href="/admin/category" class="nav-link">Category</a>
+	<a href="/admin/logout" class="nav-link">Logout</a>
+	{else:$logged}
+	<a href="/admin" class="nav-link">Login</a>
+	{/if:$logged}
+</div>
+<div style="clear:both"></div>
+<footer>&copy; UBlog 2019</footer>
+
+<script>
+let menuNav = () => {
+	sidebar.classList.toggle('active')
+	menu.classList.toggle('active')
+}
+
+let modalFunc = (modalID, params = null) => {
+	let modal = document.getElementById(modalID)
+	
+	if (params !== null) {
+		document.querySelector('#'+modalID+' .params').value = params		
+	}
+
+	modal.style.display = 'block'
+	document.querySelector('#'+modalID+' span.close').onclick = () => {
+		modal.style.display = 'none'
+	}
+	window.onclick = (event) => {
+		if (event.target == modal) {
+			modal.style.display = 'none'
+		}
+	}
+}
+</script>
+</body>
+</html>

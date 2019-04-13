@@ -32,7 +32,22 @@ class Posts_Model extends Database
 				ORDER BY created_at DESC
 			");
 			$this->execute();
-			return $this->return('fetchAll', PDO::FETCH_OBJ);
+			$posts = $this->return('fetchAll', PDO::FETCH_OBJ);
+			
+			foreach ($posts as $x)
+			{
+				$data[] = array(
+					'id'			=> $x->id,
+					'title'			=> $x->title,
+					'time'			=> date('F d, Y', $x->created_at),
+					'slug'			=> $x->slug,
+					'content'		=> $x->content,
+					'category'	=> $x->category,
+					'status'		=> $x->status
+				);
+			}
+
+			return $data;
 		}
 		elseif ($type == 'slug')
 		{

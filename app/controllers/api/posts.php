@@ -11,7 +11,7 @@ class Posts extends Controllers {
 	public function create()
 	{
 		$db = $this->model('Posts_Model');
-		$data = (object)$_POST;
+		$data = json_decode(file_get_contents('php://input'));
 		$error = 0;
 
 		$data->slug = empty($data->slug) ? $this->plugin->slugify($data->title) : $data->slug;
@@ -72,7 +72,7 @@ class Posts extends Controllers {
 	public function update()
 	{
 		$db = $this->model('Posts_Model');
-		$data = (object)$_POST;
+		$data = json_decode(file_get_contents('php://input'));
 		$error = 0;
 		
 		$data->slug = empty($data->slug) ? $this->plugin->slugify($data->title) : $data->slug;
@@ -124,7 +124,7 @@ class Posts extends Controllers {
 	public function delete()
 	{
 		$db = $this->model('Posts_Model');
-		$slug = @$_POST['slug'];
+		$slug = json_decode(file_get_contents('php://input'))->slug;
 		$error = 0;
 
 		if (empty($slug)) {
