@@ -225,8 +225,8 @@ th {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
 	z-index: 1; /* Sit on top */
-	padding-top: 10%;
-	padding-bottom: 10%;
+	padding-top: 5%;
+	padding-bottom: 5%;
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -280,6 +280,7 @@ th {
 	#content {
 		width: 70%;
 		float: right;
+		padding-top: 10px;
 	}
 	
 	#sidebar {
