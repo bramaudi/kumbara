@@ -28,28 +28,46 @@ class Category_Model extends Database
 				ORDER BY name
 			");
 			$this->execute();
-			return $this->return('fetchAll', PDO::FETCH_OBJ);
+			foreach ($this->return('fetchAll', PDO::FETCH_OBJ) as $x) {
+				$data['data'][] = array(
+					'id'	=> $x->id,
+					'slug'	=> $x->slug,
+					'name'	=> $x->name,
+					'count'	=> $this->num_rows("SELECT COUNT(id) FROM tb_posts WHERE category LIKE '%".$x->slug."%'")
+				);
+			}
+			$data['empty'] = empty($data['data']) ? 1: 0;
+			return $data;
 		}
-		elseif ($type == 'slug')
+		else
 		{
-			$this->query("
-				SELECT *
-				FROM tb_categories
-				WHERE slug = ?
-			");
-			$this->bind(1, $key);
+			if ($type == 'slug')
+			{
+				$this->query("
+					SELECT *
+					FROM tb_categories
+					WHERE slug = ?
+				");
+				$this->bind(1, $key);
+			} else {
+				$this->query("
+					SELECT *
+					FROM tb_categories
+					WHERE id = ?
+				");
+				$this->bind(1, $key);
+			}
+
 			$this->execute();
-			return $this->return('fetch', PDO::FETCH_OBJ);
-		}
-		elseif ($type == 'id') {
-			$this->query("
-				SELECT *
-				FROM tb_categories
-				WHERE id = ?
-			");
-			$this->bind(1, $key);
-			$this->execute();
-			return $this->return('fetch', PDO::FETCH_OBJ);
+			
+			$x = $this->return('fetch', PDO::FETCH_OBJ);
+			$data = array(
+				'id'	=> $x->id,
+				'slug'	=> $x->slug,
+				'name'	=> $x->name,
+				'count'	=> $this->num_rows("SELECT COUNT(id) FROM tb_posts WHERE category LIKE '%".$x->slug."%'")
+			);
+			return $data;
 		}
 	}
 

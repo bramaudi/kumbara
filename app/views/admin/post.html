@@ -6,7 +6,21 @@
 	<div class="modal-content">
 		<span class="close">&times;</span>
 		<input type="hidden" class="params">
-		<form id="editForm"></form>
+		<form id="editForm">
+			<h4>Title</h4>
+			<input type="text" id="edit_title">
+			<h4>Content</h4>
+			<textarea id="edit_content" rows="10"></textarea>
+			<h4>Slug</h4>
+			<input type="text" id="edit_slug">
+			<h4>Category</h4>
+			<div id="category_edit"></div>
+			<h4>Status</h4>
+			<input type="checkbox" id="edit_status"> Publish post?<br/>
+			<input type="hidden" id="edit_id" value="">
+			<button>Update</button>
+			<div id="editResult"></div>
+		</form>
 	</div>
 </div>
 
@@ -29,7 +43,7 @@
 			<h4>Slug</h4>
 			<input type="text" id="create_slug">
 			<h4>Category</h4>
-			<input type="text" id="create_category">
+			<div id="category_create"></div>
 			<h4>Status</h4>
 			<input type="checkbox" id="create_status"> Publish post?<br/>
 			<button>Create</button>
@@ -39,6 +53,40 @@
 </div>
 
 <script>
+let categoryLoad = (loader) => {
+	let tpl = {
+		view: (x) => {
+			return [
+				m('input', {
+					id: loader+'_'+x.attrs.value,
+					class: 'category',
+					type: 'checkbox',
+					value: x.attrs.value}),
+				m('label', {for: loader+'_'+x.attrs.value}, x.attrs.name),
+				m.trust('<br/>')
+			]
+		}
+	}
+
+	var data = []
+	m.request({
+		method: 'GET',
+		url: '/api.category'
+	})
+	.then(res => {
+		res.data.map((x) => {
+			data.push(m(tpl, {
+				value: x.slug,
+				name: x.name
+			}))
+		})
+		m.render(document.getElementById(loader), data)		
+	})
+}
+
+categoryLoad('category_create')
+categoryLoad('category_edit')
+
 let postsElement = {
 	view: (x) => {
 		return [
@@ -77,8 +125,8 @@ let loadPost = () => {
 	})
 	.then(res => {
 		
-		if (res !== null) {
-			res.map((x) => {
+		if (!res.empty) {
+			res.data.map((x) => {
 				posts.push(m(postsElement, {
 					id: x.id,
 					title: x.title,
@@ -86,51 +134,28 @@ let loadPost = () => {
 					status: x.status == 1 ? 'Published' : 'Draft'
 				}))
 			})
+
+			m.render(app, [
+				m('tr', [
+					m('th', 'Title'),
+					m('th', 'Time'),
+					m('th', 'Status'),
+					m('th', 'Action'),
+				]),
+				posts
+			])
+		}
+		else {
+			m.render(app, m('div', {class: 'notif'}, 'Post is empty.'))
 		}
 		
-		m.render(app, [
-			m('tr', [
-				m('th', 'Title'),
-				m('th', 'Time'),
-				m('th', 'Status'),
-				m('th', 'Action'),
-			]),
-			posts
-		])
 	})
 }
 
 loadPost()
 
 
-
-
-
-let postForm = {
-	view: (x) => {
-		return [
-			m('h4', 'Title'),
-			m('input', {id: 'jsForm_title', value: x.attrs.title}),
-			m('h4', 'Content'),
-			m('textarea', {id: 'jsForm_content', rows: 10}, x.attrs.content),
-			m('h4', 'Slug'),
-			m('input', {id: 'jsForm_slug', value: x.attrs.slug}),
-			m('h4', 'Category'),
-			m('input', {id: 'jsForm_category', value: x.attrs.category}),
-			m('h4', 'Status'),
-			m('input', {type: 'checkbox', id: 'jsForm_status', checked: x.attrs.checked, value: x.attrs.status}),
-			m.trust('Publish post?<br/>'),
-			m('input', {type: 'hidden', id:'jsForm_id', value: x.attrs.id}),
-			m('button', 'Save'),
-			m('div', {id:'editResult'})
-		]
-	}
-}
-
 let formEdit = (id) => {
-
-	m.render(editForm, m('div', {class:'spinner center'}))
-
 	m.request({
 		method: 'GET',
 		url: '/api.posts/'+id
@@ -139,15 +164,19 @@ let formEdit = (id) => {
 
 		let checked = res.status == 0 ? false : true
 		
-		m.render(editForm, m(postForm, {
-			id: res.id,
-			title: res.title,
-			content: res.text,
-			slug: res.slug,
-			category: res.category,
-			status: res.status,
-			checked: checked,
-		}))
+		// binding exists content to edit
+		edit_id.value = res.id
+		edit_title.value = res.title
+		edit_content.value = res.text
+		edit_slug.value = res.slug
+		edit_status.setAttribute('checked', checked)
+
+		// for category
+		let category = res.category.split(', ')
+		
+		for (i=0; i<category.length; i++) {
+			document.getElementById('category_edit_'+category[i]).setAttribute('checked', true)
+		}
 
 	})
 }
@@ -156,16 +185,22 @@ editForm.onsubmit = (event) => {
 	event.preventDefault()
 	m.render(editResult, m('div', {class:'spinner center'}))
 
+	let categoryValue = []; 
+	let inputElements = document.querySelectorAll('#category_edit .category:checked');
+	for(i=0; i<inputElements.length; ++i){
+		categoryValue.push(inputElements[i].value)
+	}
+
 	m.request({
 		method: 'POST',
 		url: '/api.posts/update',
 		data: {
-			id: jsForm_id.value,
-			title: jsForm_title.value,
-			content: jsForm_content.value,
-			slug: jsForm_slug.value,
-			category: jsForm_category.value,
-			status: jsForm_status.checked ? 1: 0
+			id: edit_id.value,
+			title: edit_title.value,
+			content: edit_content.value,
+			slug: edit_slug.value,
+			category: categoryValue.join(', '),
+			status: edit_status.checked ? 1: 0
 		}
 	})
 	.then(res => {
@@ -238,8 +273,14 @@ let formDelete = (id) => {
 
 formCreate.onsubmit = (event) => {
 
-	m.render(createResult, m('div', {class:'spinner center'}))
 	event.preventDefault()
+	m.render(createResult, m('div', {class:'spinner center'}))
+
+	let categoryValue = []; 
+	let inputElements = document.querySelectorAll('#category_create .category:checked');
+	for(i=0; i<inputElements.length; ++i){
+		categoryValue.push(inputElements[i].value)
+	}
 
 	m.request({
 		method: 'POST',
@@ -248,7 +289,7 @@ formCreate.onsubmit = (event) => {
 			title: create_title.value,
 			content: create_content.value,
 			slug: create_slug.value,
-			category: create_category.value,
+			category: categoryValue.join(', '),
 			status: create_status.checked ? 1: 0,
 		}
 	})

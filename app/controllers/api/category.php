@@ -11,7 +11,7 @@ class Category extends Controllers {
 	public function create()
 	{
 		$db = $this->model('Category_Model');
-		$data = (object)$_POST;
+		$data = json_decode(file_get_contents('php://input'));
 		$error = 0;
 
 		$data->slug = empty($data->slug) ? $this->plugin->slugify($data->name) : $data->slug;
@@ -64,11 +64,14 @@ class Category extends Controllers {
 	public function update()
 	{
 		$db = $this->model('Category_Model');
-		$data = (object)$_POST;
+		$data = json_decode(file_get_contents('php://input'));
 		$error = 0;
+		
 		
 		$data->slug = empty($data->slug) ? $this->plugin->slugify($data->name) : $data->slug;
 
+		$dup = "SELECT COUNT(id) FROM tb_categories WHERE slug = '".$data->slug."' AND id != ".$data->id;
+		
 		if (empty($data->id)) {
 			$error = 1;
 			$json['error'] = 1;
@@ -77,7 +80,7 @@ class Category extends Controllers {
 			$error = 1;
 			$json['error'] = 1;
 			$json['message'] = 'Name is empty.';
-		} elseif ($db->exists($data->slug)) {
+		} elseif ($db->num_rows($dup)) {
 			$error = 1;
 			$json['error'] = 1;
 			$json['message'] = 'Category already exists.';
@@ -108,7 +111,7 @@ class Category extends Controllers {
 	public function delete()
 	{
 		$db = $this->model('Category_Model');
-		$slug = @$_POST['slug'];
+		$slug = json_decode(file_get_contents('php://input'))->slug;
 		$error = 0;
 
 		if (empty($slug)) {

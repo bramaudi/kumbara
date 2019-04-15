@@ -1,0 +1,177 @@
+<form id="createForm" class="inline">
+	<input type="text" placeholder="New Category" id="create_name">
+	<button>Create</button>
+	<span id="createResult"></span>
+</form>
+
+<table id="app"></table>
+
+<div id="modalEdit" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<input type="hidden" class="params">
+		<form id="editForm"></form>
+	</div>
+</div>
+	
+<div id="modalDelete" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<input type="hidden" class="params">
+		<form id="deleteForm"></form>
+	</div>
+</div>
+
+<script>
+let categoryComp = {
+	view: (x) => {
+		return [
+			m('tr', [
+				m('td', x.attrs.name),
+				m('td', x.attrs.count),
+				m('td', [
+					m('button', {class: 'info', onclick: () => {
+						editCategory(x.attrs.id)
+					}}, 'Edit'),
+					m('button', {class: 'danger', onclick: () => {
+						deleteCategory(x.attrs.id)
+					}}, 'Delete'),
+				]),
+			])
+		]
+	}
+}
+
+let loadCategory = () => {
+	m.render(app, m('div', {class:'spinner center'}))
+	m.request({
+		method: 'GET',
+		url: '/api.category'
+	})
+	.then(res => {		
+
+		if (res.empty) {
+			m.render(app, m('div', {class: 'notif'}, 'Category is empty.'))
+		}
+		else {
+
+			let items = []
+			res.data.map((x) => {
+				items.push(m(categoryComp, {
+					id: x.id,
+					name: x.name,
+					count: x.count,
+				}))
+			})
+			m.render(app, [
+				m('tr', [
+					m('th', 'Name'),
+					m('th', 'Posts'),
+					m('th', 'Action'),
+				]),
+				items
+			])
+
+		}
+		
+	})
+}
+
+loadCategory()
+
+createForm.onsubmit = (event) => {
+	event.preventDefault()
+	m.render(createResult, m('div', {class: 'spinner center'}))
+
+	m.request({
+		method: 'POST',
+		url: '/api.category/create',
+		data: {
+			name: create_name.value
+		}
+	})
+	.then(res => {
+		
+		m.render(createResult, m('div', {class: 'notif'}, res.message))
+		if (!res.error) {
+			loadCategory()
+		}
+		
+	})
+}
+
+let deleteCategory = (id) => {
+	modalFunc('modalDelete')
+	m.render(deleteForm, m('div', {class: 'spinner center'}))
+	m.request({
+		method: 'GET',
+		url: '/api.category/'+id
+	})
+	.then(res => {
+		let warning = res.count == 0 ? m('p') : m('p', m.trust('<span style="color:red">Warning! this category contain some posts, if you force delete this, it will cause a little problem.</span>'))
+		document.querySelector('#modalDelete .params').value = res.slug
+		m.render(deleteForm, [
+			m('p', 'Delete this category?'),
+			m.trust('<strong>'+res.name+'</strong>'),
+			warning,
+			m('button', {class: 'danger', onclick: deleteFunc}, 'Delete'),
+			m('span', {id: 'deleteResult'})
+		])
+	})
+}
+
+let deleteFunc = (event) => {
+	event.preventDefault()
+	m.render(deleteResult, m('div', {class: 'spinner center'}))
+	m.request({
+		method: 'POST',
+		url: '/api.category/delete',
+		data: {slug: document.querySelector('#modalDelete .params').value}
+	})
+	.then(res => {
+		m.render(deleteResult, m('div', {class: 'notif'}, res.message))		
+		if (!res.error) {
+			loadCategory()
+		}
+	})
+}
+
+let editCategory = (id) => {
+	modalFunc('modalEdit')
+	m.render(editForm, m('div', {class: 'spinner center'}))
+	m.request({
+		method: 'GET',
+		url: '/api.category/'+id
+	})
+	.then(res => {
+		document.querySelector('#modalEdit .params').value = res.id
+		m.render(editForm, [
+			m('h4', 'New name'),
+			m('input', {type: 'text', id: 'edit_name', value: res.name}),
+			m('input', {type: 'hidden', id: 'edit_slug', value: res.slug}),
+			m('button', {type: 'submit'}, 'Update'),
+			m('span', {id: 'editResult'})
+		])
+	})
+}
+
+editForm.onsubmit = (event) => {
+	event.preventDefault()
+	m.render(editResult, m('div', {class: 'spinner center'}))
+	m.request({
+		method: 'POST',
+		url: '/api.category/update',
+		data: {
+			id: document.querySelector('#modalEdit .params').value,
+			name: edit_name.value,
+			slug: edit_slug.value
+		}
+	})
+	.then(res => {
+		m.render(editResult, m('div', {class: 'notif'}, res.message))
+		if (!res.error) {
+			loadCategory()
+		}
+	})
+}
+</script>

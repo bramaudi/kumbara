@@ -18,14 +18,13 @@ class Admin extends Controllers
 		else {
 			$this->login();
 		}
-
-		$this->view('admin/footer', ['logged' => $this->logged()]);
 	}
 
 	public function login()
 	{
 		$this->view('admin/header', ['title' => 'Login']);
 		$this->view('admin/login');
+		$this->footer();
 	}
 
 
@@ -40,7 +39,15 @@ class Admin extends Controllers
 	{
 		$this->view('admin/header', ['title' => 'Post']);
 		$this->view('admin/post');
-		// $this->model('Posts_Model')->read();
+		$this->footer();
+	}
+
+
+	public function category()
+	{
+		$this->view('admin/header', ['title' => 'Category']);
+		$this->view('admin/category');
+		$this->footer();
 	}
 
 
@@ -58,6 +65,12 @@ class Admin extends Controllers
 		else {
 			return false;
 		}
+	}
+
+
+	public function footer()
+	{
+		return $this->view('admin/footer', ['logged'=>$this->logged()]);
 	}
 
 }

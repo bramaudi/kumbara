@@ -36,7 +36,7 @@ class Posts_Model extends Database
 			
 			foreach ($posts as $x)
 			{
-				$data[] = array(
+				$data['data'][] = array(
 					'id'			=> $x->id,
 					'title'			=> $x->title,
 					'time'			=> date('F d, Y', $x->created_at),
@@ -46,6 +46,7 @@ class Posts_Model extends Database
 					'status'		=> $x->status
 				);
 			}
+			$data['empty'] = empty($data['data']) ? 1: 0;
 
 			return $data;
 		}
