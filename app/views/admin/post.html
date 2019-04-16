@@ -208,11 +208,8 @@ editForm.onsubmit = (event) => {
 		m.render(editResult, 
 			m('div', {class:'notif'}, res.message)
 		)
-
 		if (!res.error) {
-			setTimeout(() => {
-				loadPost()
-			}, 1000)
+			loadPost()
 		}
 		
 	})
@@ -238,11 +235,8 @@ let deleteFormComponent = {
 					m.render(deleteFormNotice,
 						m('div', {class: 'notif'}, res.message)
 					)
-
 					if (!res.error) {
-						setTimeout(() => {
-							loadPost()
-						}, 1000)
+						loadPost()
 					}
 					
 				})
@@ -296,9 +290,7 @@ formCreate.onsubmit = (event) => {
 	.then(res => {
 		m.render(createResult, m('div', {class:'notif'}, res.message))
 		if (!res.error) {
-			setTimeout(() => {
-				loadPost()
-			}, 1000)
+			loadPost()
 		}
 	})
 
