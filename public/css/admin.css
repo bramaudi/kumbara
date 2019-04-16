@@ -104,6 +104,33 @@ header #menu {
 	padding-top: 0;
 }
 
+#pagination {
+	margin: 10px;
+	margin-top: 0;
+	border-right: none;
+	text-align: center;
+}
+
+#pagination a,
+#pagination span {
+	cursor: pointer;
+	border-radius: 3px;
+	display: inline-block;
+	padding: 10px 15px;
+	margin: 0 5px 0 0;
+	border: 1px solid #ddd
+}
+
+#pagination span {
+	cursor: not-allowed;
+	background: teal;
+	color: white
+}
+
+#pagination a:nth-child(odd) {
+	background: #f0f0f0;
+}
+
 footer {
 	background: darkslategrey;
 	color: white;

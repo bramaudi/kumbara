@@ -26,10 +26,29 @@ class Posts_Model extends Database
 		$type = (!(int)$key) ? 'slug': 'id';
 		if (empty($key))
 		{
+			// pagination
+			$nums = $this->num_rows("SELECT COUNT(id) FROM tb_posts");
+			$limit = 10;
+			$pages = ceil($nums/$limit);
+			$get = (int)json_decode(file_get_contents("php://input"))->get;
+			// $get = $_POST['get'];
+			$get = !$get ? 1: $get;
+			$offset = ($get - 1) * $limit;
+
+			$data = [];
+			$data['pagination'] = array(
+				'totalPosts'		=> $nums,
+				'totalPages'		=> $pages,
+				'currentPage'		=> $get,
+				'perPage'				=> $limit,
+				'offset'				=> $offset
+			);
+
 			$this->query("
 				SELECT *
 				FROM tb_posts
 				ORDER BY created_at DESC
+				LIMIT $offset, $limit
 			");
 			$this->execute();
 			$posts = $this->return('fetchAll', PDO::FETCH_OBJ);

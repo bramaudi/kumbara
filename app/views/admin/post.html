@@ -1,6 +1,7 @@
 <button onclick="modalFunc('modalCreate')">+ Create</button>
 
 <table id="app"></table>
+<div id="pagination"></div>
 
 <div id="modalEdit" class="modal">
 	<div class="modal-content">
@@ -115,13 +116,14 @@ let postsElement = {
 	}
 }
 
-let loadPost = () => {
+let loadPost = (getPagin) => {
 	m.render(app, m('div', {class: 'spinner center'}))
 
 	let posts = []
 	m.request({
-		method: 'GET',
-		url: '/api.posts'
+		method: 'POST',
+		url: '/api.posts',
+		data: {get: getPagin}
 	})
 	.then(res => {
 		
@@ -144,12 +146,28 @@ let loadPost = () => {
 				]),
 				posts
 			])
+
+			let paginItem = []
+			for (i=1; i<=res.pagination.totalPages; i++) {
+				if (i !== res.pagination.currentPage) {
+					paginItem.push(m('a', {href: 'javascript:paginate('+i+')'}, i))
+				} else {
+					paginItem.push(m('span', i))
+				}
+			}
+
+			m.render(pagination, paginItem)
+
 		}
 		else {
 			m.render(app, m('div', {class: 'notif'}, 'Post is empty.'))
 		}
 		
 	})
+}
+
+let paginate = (x) => {
+	loadPost(x)
 }
 
 loadPost()
