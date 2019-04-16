@@ -121,6 +121,58 @@ class Posts_Model extends Database
 	}
 
 
+	public function search($var = null)
+	{
+		// pagination
+		$nums = $this->num_rows("SELECT COUNT(id) FROM tb_posts WHERE title LIKE '%".$var."%'");
+		$limit = 10;
+		$pages = ceil($nums/$limit);
+		$get = (int)json_decode(file_get_contents("php://input"))->get;
+		// $get = $_POST['get'];
+		$get = !$get ? 1: $get;
+		$offset = ($get - 1) * $limit;
+
+		$data = [];
+		$data['pagination'] = array(
+			'totalPosts'		=> $nums,
+			'totalPages'		=> $pages,
+			'currentPage'		=> $get,
+			'perPage'				=> $limit,
+			'offset'				=> $offset
+		);
+
+		$this->query("
+			SELECT *
+			FROM tb_posts
+			WHERE title LIKE '%$var%'
+			ORDER BY created_at DESC
+			LIMIT $offset, $limit
+		");
+		$this->execute();
+		$posts = $this->return('fetchAll', PDO::FETCH_OBJ);
+		
+		if (isset($var)) {
+			foreach ($posts as $x)
+			{
+				$data['data'][] = array(
+					'id'			=> $x->id,
+					'title'			=> $x->title,
+					'time'			=> date('F d, Y', $x->created_at),
+					'slug'			=> $x->slug,
+					'content'		=> $x->content,
+					'category'	=> $x->category,
+					'status'		=> $x->status
+				);
+			}
+		}
+
+		$data['empty'] = empty($data['data']) ? 1: 0;
+		$data['pagination'] = empty($data['data']) ? null: $data['pagination'];
+
+		return $data;
+	}
+
+
 	public function exists($slug, $id = null)
 	{
 		if (empty($id))

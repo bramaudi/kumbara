@@ -150,4 +150,11 @@ class Posts extends Controllers {
 		echo json_encode($json);
 	}
 
+
+	public function search($q = null)
+	{
+		$db = $this->model('Posts_Model');
+		echo json_encode($db->search($q));
+	}
+
 }

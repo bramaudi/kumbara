@@ -197,6 +197,10 @@ button:disabled {
 
 
 /** Table */
+.table-responsive {
+	overflow-x: auto;
+	margin: 0 10px 0 0;
+}
 table {
 	width: calc(100% - 20px);
 	border-collapse: collapse;

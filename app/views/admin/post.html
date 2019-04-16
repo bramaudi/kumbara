@@ -1,6 +1,12 @@
+<form id="search_post">
+	<input type="text" id="search_input" placeholder="Search post">
+</form>
+
 <button onclick="modalFunc('modalCreate')">+ Create</button>
 
-<table id="app"></table>
+<div class="table-responsive">
+		<table id="app"></table>
+</div>
 <div id="pagination"></div>
 
 <div id="modalEdit" class="modal">
@@ -54,6 +60,21 @@
 </div>
 
 <script>
+search_post.onkeyup = (event) => {
+	event.preventDefault()
+	m.request({
+		method: 'POST',
+		url: '/api.posts/search/'+search_input.value
+	})
+	.then(res => {
+				
+		if (search_input.value !== '') {
+			loadPost(1, '/api.posts/search/'+search_input.value)
+		}
+		
+	})
+}
+
 let categoryLoad = (loader) => {
 	let tpl = {
 		view: (x) => {
@@ -116,13 +137,13 @@ let postsElement = {
 	}
 }
 
-let loadPost = (getPagin) => {
+let loadPost = (getPagin, targetURL = null) => {
 	m.render(app, m('div', {class: 'spinner center'}))
 
 	let posts = []
 	m.request({
 		method: 'POST',
-		url: '/api.posts',
+		url: targetURL === null ? '/api.posts' : targetURL,
 		data: {get: getPagin}
 	})
 	.then(res => {
@@ -161,6 +182,7 @@ let loadPost = (getPagin) => {
 		}
 		else {
 			m.render(app, m('div', {class: 'notif'}, 'Post is empty.'))
+			m.render(pagination, '')
 		}
 		
 	})
