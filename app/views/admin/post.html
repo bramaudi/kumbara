@@ -212,7 +212,7 @@ let formEdit = (id) => {
 		edit_status.setAttribute('checked', checked)
 
 		// for category
-		let category = res.category.split(', ')
+		let category = res.category.split(',')
 		
 		for (i=0; i<category.length; i++) {
 			document.getElementById('category_edit_'+category[i]).setAttribute('checked', true)
@@ -239,7 +239,7 @@ editForm.onsubmit = (event) => {
 			title: edit_title.value,
 			content: edit_content.value,
 			slug: edit_slug.value,
-			category: categoryValue.join(', '),
+			category: categoryValue.join(','),
 			status: edit_status.checked ? 1: 0
 		}
 	})
@@ -323,7 +323,7 @@ formCreate.onsubmit = (event) => {
 			title: create_title.value,
 			content: create_content.value,
 			slug: create_slug.value,
-			category: categoryValue.join(', '),
+			category: categoryValue.join(','),
 			status: create_status.checked ? 1: 0,
 		}
 	})
